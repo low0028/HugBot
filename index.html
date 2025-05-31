@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self' 'unsafe-inline' https://*.ngrok-free.app; 
+                   img-src 'self' data:; 
+                   connect-src 'self' https://*.ngrok-free.app;">
+    
+    <title>HugBot - 你的情绪陪伴伙伴</title>
+    <style>
+        /* 添加基础样式确保内容可见 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HugBot 状态检查</h1>
+        
+        <div id="github-status" class="status">
+            正在检查 GitHub Pages 状态...
+        </div>
+        
+        <div id="api-status" class="status">
+            正在检查情绪 API 连接...
+        </div>
+        
+        <div id="app-status" class="status">
+            正在加载应用程序...
+        </div>
+        
+        <div id="app-container">
+            <!-- 应用程序将在这里加载 -->
+        </div>
+    </div>
+
+    <script>
+        // 1. 检查 GitHub Pages 状态
+        const githubStatus = document.getElementById('github-status');
+        githubStatus.textContent = "GitHub Pages 已加载成功！";
+        githubStatus.classList.add('success');
+        
+        // 2. 检查 API 连接
+        const apiStatus = document.getElementById('api-status');
+        const EMOTION_API_URL = "https://your-colab-ngrok-url"; // 替换为您的 API URL
+        
+        fetch(`${EMOTION_API_URL}/analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: "测试连接" })
+        })
+        .then(response => {
+            if (response.ok) {
+                apiStatus.textContent = "情绪 API 连接成功！";
+                apiStatus.classList.add('success');
+                loadMainApp();
+            } else {
+                apiStatus.textContent = "情绪 API 连接失败";
+                apiStatus.classList.add('error');
+            }
+        })
+        .catch(error => {
+            apiStatus.textContent = `API 错误: ${error.message}`;
+            apiStatus.classList.add('error');
+        });
+        
+        // 3. 加载主应用程序
+        function loadMainApp() {
+            const appStatus = document.getElementById('app-status');
+            
+            try {
+                // 创建 iframe 加载实际应用
+                const iframe = document.createElement('iframe');
+                iframe.src = "hugbot.html"; // 您的应用文件名
+                iframe.style.width = "100%";
+                iframe.style.height = "600px";
+                iframe.style.border = "none";
+                
+                document.getElementById('app-container').appendChild(iframe);
+                
+                appStatus.textContent = "应用程序加载成功！";
+                appStatus.classList.add('success');
+            } catch (error) {
+                appStatus.textContent = `应用加载错误: ${error.message}`;
+                appStatus.classList.add('error');
+            }
+        }
+    </script>
+</body>
+</html>
